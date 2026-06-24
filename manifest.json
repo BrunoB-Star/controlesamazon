@@ -1,0 +1,62 @@
+{
+  "name": "Contrôles Sous-Traitants Amazon",
+  "short_name": "Contrôles ST",
+  "description": "Application mobile de suivi des contrôles de conformité des sous-traitants Amazon - LIC, Mobilic, Licences de transport",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#ffffff",
+  "theme_color": "#1e40af",
+  "orientation": "portrait-primary",
+  "icons": [
+    {
+      "src": "data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 192 192'><rect fill='%231e40af' width='192' height='192'/><text x='50%' y='50%' font-size='120' fill='white' text-anchor='middle' dominant-baseline='central' font-weight='bold'>✓</text></svg>",
+      "sizes": "192x192",
+      "type": "image/svg+xml",
+      "purpose": "any"
+    },
+    {
+      "src": "data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 512 512'><rect fill='%231e40af' width='512' height='512'/><text x='50%' y='50%' font-size='320' fill='white' text-anchor='middle' dominant-baseline='central' font-weight='bold'>✓</text></svg>",
+      "sizes": "512x512",
+      "type": "image/svg+xml",
+      "purpose": "maskable"
+    }
+  ],
+  "categories": ["productivity", "business"],
+  "screenshots": [
+    {
+      "src": "data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 540 720'><rect fill='%23f0f9ff' width='540' height='720'/><rect fill='%231e40af' width='540' height='80'/><text x='20' y='50' font-size='32' fill='white' font-weight='bold'>Contrôles ST</text><rect x='20' y='120' width='500' height='120' fill='white' stroke='%23e5e7eb' stroke-width='2' rx='8'/><text x='40' y='160' font-size='16' font-weight='bold'>Site: DAO2</text><text x='40' y='190' font-size='14' fill='%236b7280'>Contrôleur: Jean Dupont</text><rect x='20' y='280' width='500' height='80' fill='white' stroke='%23e5e7eb' stroke-width='2' rx='8'/><text x='40' y='310' font-size='14' font-weight='bold'>N° 1: ACME Logistics</text><text x='40' y='335' font-size='13' fill='%236b7280'>LIC: Oui | Licence: Oui</text></svg>",
+      "sizes": "540x720",
+      "type": "image/svg+xml",
+      "form_factor": "narrow"
+    }
+  ],
+  "shortcuts": [
+    {
+      "name": "Nouveau contrôle",
+      "short_name": "Ajouter",
+      "description": "Ajouter un nouveau contrôle de sous-traitant",
+      "url": "/?action=new",
+      "icons": [
+        {
+          "src": "data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 96 96'><rect fill='%2310b981' width='96' height='96'/><text x='50%' y='50%' font-size='60' fill='white' text-anchor='middle' dominant-baseline='central' font-weight='bold'>+</text></svg>",
+          "sizes": "96x96",
+          "type": "image/svg+xml"
+        }
+      ]
+    },
+    {
+      "name": "Exporter données",
+      "short_name": "Export",
+      "description": "Exporter les contrôles en CSV",
+      "url": "/?action=export",
+      "icons": [
+        {
+          "src": "data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 96 96'><rect fill='%233b82f6' width='96' height='96'/><text x='50%' y='50%' font-size='60' fill='white' text-anchor='middle' dominant-baseline='central' font-weight='bold'>⬇</text></svg>",
+          "sizes": "96x96",
+          "type": "image/svg+xml"
+        }
+      ]
+    }
+  ],
+  "prefer_related_applications": false
+}

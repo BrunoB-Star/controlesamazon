@@ -1,0 +1,605 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Application mobile de contrôle des sous-traitants Amazon">
+  <meta name="theme-color" content="#1e40af">
+  <title>Contrôles Sous-Traitants</title>
+  
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
+      background: linear-gradient(to bottom right, #f0f9ff, #e0e7ff);
+      min-height: 100vh;
+      padding-bottom: 100px;
+    }
+
+    .header {
+      background: linear-gradient(to right, #1e40af, #4f46e5);
+      color: white;
+      padding: 1rem;
+      position: sticky;
+      top: 0;
+      z-index: 40;
+      box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+    }
+
+    .header-content {
+      max-width: 1000px;
+      margin: 0 auto;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .header h1 {
+      font-size: 1.25rem;
+      font-weight: bold;
+    }
+
+    .status-icon {
+      font-size: 1.2rem;
+    }
+
+    .online { color: #86efac; }
+    .offline { color: #fca5a5; }
+
+    .menu-btn {
+      background: none;
+      border: none;
+      color: white;
+      font-size: 1.5rem;
+      cursor: pointer;
+      padding: 0.5rem;
+    }
+
+    .menu {
+      display: none;
+      position: fixed;
+      top: 60px;
+      left: 0;
+      right: 0;
+      background: white;
+      box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+      z-index: 30;
+    }
+
+    .menu.open {
+      display: block;
+    }
+
+    .menu button {
+      width: 100%;
+      padding: 1rem;
+      border: none;
+      background: white;
+      text-align: left;
+      cursor: pointer;
+      border-bottom: 1px solid #e5e7eb;
+      font-size: 1rem;
+    }
+
+    .menu button:hover {
+      background: #f9fafb;
+    }
+
+    .container {
+      max-width: 1000px;
+      margin: 0 auto;
+      padding: 1.5rem 1rem;
+    }
+
+    .card {
+      background: white;
+      border-radius: 0.5rem;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+      padding: 1.5rem;
+      margin-bottom: 1.5rem;
+    }
+
+    .card h2 {
+      font-size: 1.125rem;
+      font-weight: 600;
+      color: #1f2937;
+      margin-bottom: 1rem;
+    }
+
+    .form-group {
+      margin-bottom: 1rem;
+    }
+
+    .form-group label {
+      display: block;
+      font-size: 0.875rem;
+      font-weight: 500;
+      color: #374151;
+      margin-bottom: 0.25rem;
+    }
+
+    .form-group input,
+    .form-group select,
+    .form-group textarea {
+      width: 100%;
+      padding: 0.5rem;
+      border: 1px solid #d1d5db;
+      border-radius: 0.375rem;
+      font-size: 0.875rem;
+      font-family: inherit;
+    }
+
+    .form-group input:focus,
+    .form-group select:focus,
+    .form-group textarea:focus {
+      outline: none;
+      ring: 2px;
+      ring-color: #3b82f6;
+      border-color: #3b82f6;
+    }
+
+    .form-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1rem;
+    }
+
+    @media (max-width: 640px) {
+      .form-row {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    .form-row.full {
+      grid-column: 1 / -1;
+    }
+
+    .controle-item {
+      border: 1px solid #e5e7eb;
+      border-radius: 0.5rem;
+      padding: 1rem;
+      margin-bottom: 1rem;
+      background: #f9fafb;
+    }
+
+    .controle-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 1rem;
+      font-weight: 600;
+      color: #1f2937;
+    }
+
+    .delete-btn {
+      background: none;
+      border: none;
+      color: #ef4444;
+      cursor: pointer;
+      font-size: 1.25rem;
+    }
+
+    .status-message {
+      padding: 0.75rem;
+      border-radius: 0.375rem;
+      background: #dbeafe;
+      color: #1e40af;
+      font-size: 0.875rem;
+      margin-top: 1rem;
+    }
+
+    .button-group {
+      display: flex;
+      gap: 0.75rem;
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      background: white;
+      padding: 1rem;
+      box-shadow: 0 -1px 3px rgba(0,0,0,0.1);
+    }
+
+    .button-group button {
+      flex: 1;
+      padding: 0.75rem 1rem;
+      border: none;
+      border-radius: 0.375rem;
+      cursor: pointer;
+      font-weight: 500;
+      font-size: 0.875rem;
+    }
+
+    .button-group button:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
+
+    .btn-primary {
+      background: #3b82f6;
+      color: white;
+    }
+
+    .btn-primary:hover:not(:disabled) {
+      background: #2563eb;
+    }
+
+    .btn-success {
+      background: #10b981;
+      color: white;
+    }
+
+    .btn-success:hover:not(:disabled) {
+      background: #059669;
+    }
+
+    .btn-add {
+      background: #10b981;
+      color: white;
+      padding: 0.5rem 1rem;
+    }
+
+    .btn-add:hover {
+      background: #059669;
+    }
+
+    .counter {
+      font-size: 0.875rem;
+      color: #6b7280;
+      margin-top: 0.5rem;
+    }
+  </style>
+</head>
+<body>
+  <!-- En-tête -->
+  <div class="header">
+    <div class="header-content">
+      <h1>Contrôles Sous-Traitants</h1>
+      <div style="display: flex; align-items: center; gap: 1rem;">
+        <span id="statusIcon" class="status-icon online">●</span>
+        <button class="menu-btn" onclick="toggleMenu()">☰</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Menu -->
+  <div id="menu" class="menu">
+    <button onclick="exportCSV()">⬇️ Exporter CSV</button>
+    <button onclick="sendData()">📤 Envoyer vers Google Sheets</button>
+  </div>
+
+  <!-- Contenu -->
+  <div class="container">
+    <!-- Infos Session -->
+    <div class="card">
+      <h2>Infos Session</h2>
+      
+      <div class="form-group">
+        <label>Site Amazon</label>
+        <input type="text" id="siteAmazon" placeholder="Ex: DAO2, DAR9, DIF1...">
+      </div>
+
+      <div class="form-group">
+        <label>Nom du contrôleur</label>
+        <input type="text" id="controleur" placeholder="Votre nom">
+      </div>
+
+      <div id="statusMessage"></div>
+    </div>
+
+    <!-- Contrôles -->
+    <div class="card">
+      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
+        <h2 style="margin: 0;">Contrôles</h2>
+        <button class="btn-add" onclick="ajouterControle()">+ Ajouter</button>
+      </div>
+      <div class="counter" id="counter"></div>
+      <div id="controlesContainer"></div>
+    </div>
+
+    <!-- Commentaires -->
+    <div class="card">
+      <h2>Commentaires</h2>
+      <div class="form-group">
+        <textarea id="commentaires" rows="4" placeholder="Remarques générales..."></textarea>
+      </div>
+    </div>
+
+    <!-- Espacement pour les boutons en bas -->
+    <div style="height: 100px;"></div>
+  </div>
+
+  <!-- Boutons action (en bas) -->
+  <div class="button-group">
+    <button class="btn-primary" id="csvBtn" onclick="exportCSV()" disabled>⬇️ CSV</button>
+    <button class="btn-success" id="sendBtn" onclick="sendData()" disabled>📤 Google Sheets</button>
+  </div>
+
+  <script>
+    // ⚠️ IMPORTANT : Remplace cette URL par celle de ton Google Apps Script
+    const GOOGLE_SCRIPT_URL = https://script.google.com/macros/s/AKfycbx-PreRt3Q1uirS-7gTUN-pPAMlyE8bkZqtQfmwKy1wuiRWQ-DeDZ3hyQafZX7kz-J3/exec;
+
+    // État global
+    let controles = [];
+    let isOnline = navigator.onLine;
+
+    // Initialisation
+    window.addEventListener('online', () => {
+      isOnline = true;
+      updateStatusIcon();
+    });
+
+    window.addEventListener('offline', () => {
+      isOnline = false;
+      updateStatusIcon();
+    });
+
+    // Charger les données au démarrage
+    window.addEventListener('DOMContentLoaded', () => {
+      const saved = localStorage.getItem('controles_data');
+      if (saved) {
+        controles = JSON.parse(saved);
+      }
+
+      const savedSite = localStorage.getItem('site_amazon');
+      const savedControleur = localStorage.getItem('controleur');
+      if (savedSite) document.getElementById('siteAmazon').value = savedSite;
+      if (savedControleur) document.getElementById('controleur').value = savedControleur;
+
+      updateStatusIcon();
+      afficherControles();
+      updateButtons();
+
+      // Enregistrer le service worker
+      if ('serviceWorker' in navigator) {
+        navigator.serviceWorker.register('sw.js').catch(() => {});
+      }
+    });
+
+    // Auto-save
+    document.getElementById('siteAmazon').addEventListener('change', (e) => {
+      localStorage.setItem('site_amazon', e.target.value);
+    });
+
+    document.getElementById('controleur').addEventListener('change', (e) => {
+      localStorage.setItem('controleur', e.target.value);
+    });
+
+    function updateStatusIcon() {
+      const icon = document.getElementById('statusIcon');
+      if (isOnline) {
+        icon.className = 'status-icon online';
+        icon.textContent = '●';
+      } else {
+        icon.className = 'status-icon offline';
+        icon.textContent = '●';
+      }
+    }
+
+    function toggleMenu() {
+      document.getElementById('menu').classList.toggle('open');
+    }
+
+    function ajouterControle() {
+      const nouveau = {
+        id: Date.now(),
+        date: new Date().toISOString().split('T')[0],
+        societe: '',
+        collaborateurs: '',
+        licPapier: null,
+        licRempli: null,
+        immatriculation: '',
+        licence: null
+      };
+      controles.push(nouveau);
+      sauvegarder();
+      afficherControles();
+      updateButtons();
+    }
+
+    function modifierControle(index, field, value) {
+      if (field === 'licPapier' || field === 'licRempli' || field === 'licence') {
+        controles[index][field] = value === '' ? null : (value === 'oui');
+      } else {
+        controles[index][field] = value;
+      }
+      sauvegarder();
+    }
+
+    function supprimerControle(index) {
+      controles.splice(index, 1);
+      sauvegarder();
+      afficherControles();
+      updateButtons();
+    }
+
+    function afficherControles() {
+      const container = document.getElementById('controlesContainer');
+      container.innerHTML = '';
+
+      if (controles.length === 0) {
+        container.innerHTML = '<p style="color: #9ca3af; text-align: center; padding: 2rem;">Aucun contrôle ajouté. Clique sur "+ Ajouter" pour commencer.</p>';
+      }
+
+      controles.forEach((controle, index) => {
+        const div = document.createElement('div');
+        div.className = 'controle-item';
+        
+        div.innerHTML = `
+          <div class="controle-header">
+            <span>N° ${index + 1}</span>
+            <button class="delete-btn" onclick="supprimerControle(${index})">🗑️</button>
+          </div>
+
+          <div class="form-row">
+            <div class="form-group">
+              <label>Date</label>
+              <input type="date" value="${controle.date}" onchange="modifierControle(${index}, 'date', this.value)">
+            </div>
+            <div class="form-group">
+              <label>Société</label>
+              <input type="text" value="${controle.societe}" placeholder="Nom de la société" onchange="modifierControle(${index}, 'societe', this.value)">
+            </div>
+          </div>
+
+          <div class="form-group full">
+            <label>Collaborateurs</label>
+            <input type="text" value="${controle.collaborateurs}" placeholder="Ex: Jean Dupont, Marie Martin" onchange="modifierControle(${index}, 'collaborateurs', this.value)">
+          </div>
+
+          <div class="form-row">
+            <div class="form-group">
+              <label>Immatriculation</label>
+              <input type="text" value="${controle.immatriculation}" placeholder="AA-123-BC" onchange="modifierControle(${index}, 'immatriculation', this.value)">
+            </div>
+            <div class="form-group">
+              <label>LIC Papier/Mobilic?</label>
+              <select onchange="modifierControle(${index}, 'licPapier', this.value)">
+                <option value="">--</option>
+                <option value="oui" ${controle.licPapier === true ? 'selected' : ''}>Oui</option>
+                <option value="non" ${controle.licPapier === false ? 'selected' : ''}>Non</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="form-row">
+            <div class="form-group">
+              <label>LIC bien rempli?</label>
+              <select onchange="modifierControle(${index}, 'licRempli', this.value)">
+                <option value="">--</option>
+                <option value="oui" ${controle.licRempli === true ? 'selected' : ''}>Oui</option>
+                <option value="non" ${controle.licRempli === false ? 'selected' : ''}>Non</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label>Licence transport?</label>
+              <select onchange="modifierControle(${index}, 'licence', this.value)">
+                <option value="">--</option>
+                <option value="oui" ${controle.licence === true ? 'selected' : ''}>Oui</option>
+                <option value="non" ${controle.licence === false ? 'selected' : ''}>Non</option>
+              </select>
+            </div>
+          </div>
+        `;
+
+        container.appendChild(div);
+      });
+
+      document.getElementById('counter').textContent = `${controles.length} contrôle(s)`;
+    }
+
+    function sauvegarder() {
+      localStorage.setItem('controles_data', JSON.stringify(controles));
+    }
+
+    function updateButtons() {
+      const csvBtn = document.getElementById('csvBtn');
+      const sendBtn = document.getElementById('sendBtn');
+      csvBtn.disabled = controles.length === 0;
+      sendBtn.disabled = controles.length === 0;
+    }
+
+    function exportCSV() {
+      const site = document.getElementById('siteAmazon').value;
+      const controleur = document.getElementById('controleur').value;
+      const commentaires = document.getElementById('commentaires').value;
+
+      const headers = ['N°', 'Date', 'Société', 'Collaborateurs', 'LIC Papier/Mobilic', 'LIC Rempli', 'Immatriculation', 'Licence Transport'];
+      
+      const rows = controles.map((c, i) => [
+        i + 1,
+        c.date,
+        c.societe,
+        c.collaborateurs,
+        c.licPapier === null ? '' : (c.licPapier ? 'Oui' : 'Non'),
+        c.licRempli === null ? '' : (c.licRempli ? 'Oui' : 'Non'),
+        c.immatriculation,
+        c.licence === null ? '' : (c.licence ? 'Oui' : 'Non')
+      ]);
+
+      let csv = `CONTRÔLES DES SOUS-TRAITANTS - Site: ${site}\n`;
+      csv += `Contrôleur: ${controleur}\n`;
+      csv += `Date session: ${new Date().toLocaleDateString('fr-FR')}\n\n`;
+      csv += headers.join(',') + '\n';
+      csv += rows.map(r => r.map(cell => `"${cell}"`).join(',')).join('\n');
+
+      if (commentaires) {
+        csv += `\n\nCommentaires:\n${commentaires}`;
+      }
+
+      const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+      const lien = document.createElement('a');
+      const url = URL.createObjectURL(blob);
+      lien.href = url;
+      lien.download = `controles_${site}_${new Date().toISOString().split('T')[0]}.csv`;
+      document.body.appendChild(lien);
+      lien.click();
+      document.body.removeChild(lien);
+      URL.revokeObjectURL(url);
+
+      showStatus('✅ CSV téléchargé !');
+    }
+
+    function sendData() {
+      if (GOOGLE_SCRIPT_URL === 'REMPLACE_MOI_PAR_TON_URL_GOOGLE_APPS_SCRIPT') {
+        showStatus('⚠️ Configure l\'URL Google Apps Script d\'abord!');
+        return;
+      }
+
+      if (!isOnline) {
+        showStatus('❌ Pas de connexion. Données sauvegardées localement.');
+        return;
+      }
+
+      if (controles.length === 0) {
+        showStatus('❌ Aucun contrôle à envoyer.');
+        return;
+      }
+
+      showStatus('⏳ Envoi vers Google Sheets...');
+
+      const donnees = {
+        site: document.getElementById('siteAmazon').value,
+        controleur: document.getElementById('controleur').value,
+        commentaires: document.getElementById('commentaires').value,
+        controles: controles,
+        timestamp: new Date().toISOString()
+      };
+
+      fetch(GOOGLE_SCRIPT_URL, {
+        method: 'POST',
+        mode: 'no-cors',
+        body: JSON.stringify(donnees)
+      })
+      .then(() => {
+        showStatus('✅ Données envoyées à Google Sheets!');
+        // Vider après l'envoi
+        setTimeout(() => {
+          controles = [];
+          sauvegarder();
+          afficherControles();
+          updateButtons();
+        }, 2000);
+      })
+      .catch(error => {
+        showStatus('❌ Erreur: ' + error.message);
+        console.error('Erreur:', error);
+      });
+    }
+
+    function showStatus(msg) {
+      const elem = document.getElementById('statusMessage');
+      elem.textContent = msg;
+      elem.style.display = 'block';
+      setTimeout(() => {
+        elem.style.display = 'none';
+      }, 4000);
+    }
+  </script>
+</body>
+</html>
